@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#c9a84c"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Oragon Sikap"/>
+<title>Oragon Sikap Microfinance</title>
+<link rel="manifest" href="manifest.json"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0a1628;--gold:#c9a84c;--gold-light:#e8c97a;--cream:#f9f5ee;
+  --gray:#6b7280;--white:#fff;--green:#16a34a;--red:#dc2626;--blue:#1d4ed8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:999;background:rgba(10,22,40,0.97);
+  backdrop-filter:blur(8px);padding:0.75rem 1.5rem;
+  border-bottom:1px solid rgba(201,168,76,0.3);
+  display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1rem;white-space:nowrap;}
+.nav-tabs{display:flex;gap:0.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{background:none;border:none;color:rgba(255,255,255,0.6);font-size:0.72rem;
+  letter-spacing:0.05em;text-transform:uppercase;padding:0.45rem 0.75rem;border-radius:4px;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;}
+.tab-btn.active,.tab-btn:hover{background:rgba(201,168,76,0.15);color:var(--gold);}
+
+/* PAGES */
+.page{display:none;min-height:100vh;padding:5rem 1rem 2rem;}
+.page.active{display:block;}
+.inner{max-width:720px;margin:0 auto;}
+.inner-wide{max-width:1100px;margin:0 auto;}
+
+/* CARDS */
+.card{background:var(--white);border-radius:8px;padding:1.5rem;
+  border:1px solid rgba(10,22,40,0.08);margin-bottom:1.25rem;}
+.card-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:0.4rem;}
+.card-sub{font-size:0.83rem;color:var(--gray);margin-bottom:1.25rem;line-height:1.6;}
+
+/* FORMS */
+.fg{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.9rem;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+.fg2 .fg{margin-bottom:0;}
+.fg.full{grid-column:span 2;}
+label{font-size:0.72rem;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--navy);}
+input,select,textarea{border:1.5px solid rgba(10,22,40,0.15);border-radius:6px;
+  padding:0.65rem 0.9rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;
+  color:var(--navy);background:var(--cream);outline:none;transition:border-color 0.2s;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:80px;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;
+  padding:0.75rem 1.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;font-weight:500;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-navy{background:var(--navy);color:var(--white);}
+.btn-navy:hover{background:#132238;}
+.btn-outline{background:none;border:1.5px solid var(--navy);color:var(--navy);}
+.btn-outline:hover{background:var(--navy);color:var(--white);}
+.btn-sm{padding:0.4rem 0.8rem;font-size:0.78rem;}
+.btn-green{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
+.btn-red{background:#fee2e2;color:#dc2626;border:1px solid #fecaca;}
+.btn-print{background:rgba(10,22,40,0.06);color:var(--navy);border:1px solid rgba(10,22,40,0.15);}
+.btn-print:hover{background:var(--navy);color:var(--white);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.2rem 0.65rem;
+  border-radius:20px;font-size:0.72rem;font-weight:500;}
+.badge-pending{background:#fef9c3;color:#854d0e;}
+.badge-approved{background:#dcfce7;color:#15803d;}
+.badge-active{background:#dbeafe;color:#1e40af;}
+.badge-paid{background:#f3f4f6;color:#374151;}
+.badge-overdue{background:#fee2e2;color:#dc2626;}
+
+/* STEPS */
+.steps{display:flex;margin-bottom:1.5rem;}
+.step{flex:1;text-align:center;position:relative;}
+.step::after{content:'';position:absolute;top:15px;left:50%;right:-50%;height:2px;background:rgba(10,22,40,0.1);}
+.step:last-child::after{display:none;}
+.step.done::after{background:var(--gold);}
+.step-dot{width:30px;height:30px;border-radius:50%;margin:0 auto 0.4rem;
+  display:flex;align-items:center;justify-content:center;font-size:0.75rem;
+  font-weight:500;position:relative;z-index:1;background:rgba(10,22,40,0.08);color:var(--gray);}
+.step.active .step-dot{background:var(--gold);color:var(--navy);}
+.step.done .step-dot{background:var(--navy);color:var(--white);}
+.step-label{font-size:0.65rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;}
+.step.active .step-label{color:var(--navy);font-weight:500;}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
+thead th{text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--gray);padding:0.65rem 0.9rem;border-bottom:2px solid rgba(10,22,40,0.08);}
+tbody td{padding:0.8rem 0.9rem;border-bottom:1px solid rgba(10,22,40,0.05);
+  font-size:0.85rem;vertical-align:middle;}
+tbody tr:hover{background:rgba(201,168,76,0.04);}
+tfoot td{padding:0.8rem 0.9rem;font-weight:500;font-size:0.88rem;
+  border-top:2px solid rgba(10,22,40,0.1);background:rgba(10,22,40,0.02);}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1.25rem;}
+.stat-card{background:var(--white);border-radius:8px;padding:1.25rem;border:1px solid rgba(10,22,40,0.08);}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);}
+.stat-label{font-size:0.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.07em;}
+.stat-card.gold-a{border-left:3px solid var(--gold);}
+.stat-card.green-a{border-left:3px solid var(--green);}
+.stat-card.red-a{border-left:3px solid var(--red);}
+.stat-card.blue-a{border-left:3px solid var(--blue);}
+
+/* TRACKER */
+.tracker-card{background:var(--navy);border-radius:8px;padding:1.5rem;color:var(--white);}
+.progress-bar{height:7px;background:rgba(255,255,255,0.1);border-radius:4px;margin:0.75rem 0;}
+.progress-fill{height:100%;border-radius:4px;background:var(--gold);transition:width 0.5s;}
+.pay-row{display:flex;justify-content:space-between;align-items:center;
+  padding:0.65rem 0.9rem;background:rgba(255,255,255,0.05);border-radius:6px;margin-bottom:0.5rem;}
+.pay-row.paid-r{background:rgba(22,163,74,0.15);}
+.pay-row.due-r{background:rgba(201,168,76,0.15);}
+.pay-row.over-r{background:rgba(220,38,38,0.15);}
+
+/* GCASH BOX */
+.gcash-box{background:linear-gradient(135deg,#0061A3,#00A0E4);
+  border-radius:8px;padding:1.5rem;color:var(--white);text-align:center;margin-bottom:1rem;}
+.gcash-logo{font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.4rem;}
+.gcash-num{font-size:1.8rem;font-weight:300;letter-spacing:0.1em;margin:0.5rem 0;}
+
+/* INSTAPAY BOX */
+.instapay-box{background:linear-gradient(135deg,#1a5f3a,#27a35a);
+  border-radius:8px;padding:1.5rem;color:var(--white);text-align:center;margin-bottom:1rem;}
+
+/* ALERTS */
+.alert{padding:0.85rem 1.1rem;border-radius:6px;font-size:0.83rem;margin-bottom:1rem;line-height:1.5;}
+.alert-info{background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;}
+.alert-warn{background:#fef9c3;color:#854d0e;border:1px solid #fde68a;}
+.alert-success{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
+
+/* SECTION HEADER */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;gap:0.75rem;flex-wrap:wrap;}
+.sec-eyebrow{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;}
+.sec-head h1{font-family:'Playfair Display',serif;font-size:1.5rem;}
+
+/* ADMIN TABS */
+.admin-tabs{display:flex;gap:0.25rem;flex-wrap:wrap;margin-bottom:1.25rem;
+  background:rgba(10,22,40,0.04);padding:0.25rem;border-radius:8px;}
+.atab{background:none;border:none;padding:0.5rem 0.9rem;border-radius:6px;
+  font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;color:var(--gray);transition:all 0.2s;}
+.atab.active{background:var(--white);color:var(--navy);font-weight:500;
+  box-shadow:0 1px 4px rgba(10,22,40,0.1);}
+
+/* FINANCIAL FORM ROW */
+.fin-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:0.6rem;align-items:flex-end;
+  padding:0.75rem;background:rgba(10,22,40,0.02);border-radius:6px;margin-bottom:0.6rem;border:1px solid rgba(10,22,40,0.06);}
+
+/* P&L */
+.pl-section{margin-bottom:1rem;}
+.pl-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray);
+  padding:0.5rem 0.9rem;background:rgba(10,22,40,0.04);border-radius:4px;margin-bottom:0.5rem;}
+.pl-row{display:flex;justify-content:space-between;padding:0.5rem 0.9rem;
+  border-bottom:1px solid rgba(10,22,40,0.05);font-size:0.88rem;}
+.pl-row.total{font-weight:500;border-top:2px solid rgba(10,22,40,0.1);border-bottom:none;
+  padding-top:0.75rem;margin-top:0.25rem;}
+.pl-row.net-income{background:var(--navy);color:var(--white);border-radius:6px;
+  padding:0.75rem 0.9rem;margin-top:0.75rem;font-family:'Playfair Display',serif;font-size:1rem;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:9000;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--white);border-radius:12px;padding:1.75rem;
+  max-width:480px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.25rem;}
+
+/* INSTALL BANNER */
+#install-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:888;
+  background:var(--navy);border-top:2px solid var(--gold);
+  padding:1rem 1.5rem;align-items:center;justify-content:space-between;gap:1rem;}
+#install-banner.show{display:flex;}
+
+/* PRINT STYLES */
+@media print{
+  nav,#install-banner,.no-print,.tab-btn,.btn-print,.admin-tabs,.atab{display:none!important;}
+  .page{display:block!important;padding:0!important;}
+  .inner,.inner-wide{max-width:100%!important;}
+  body{background:white;}
+  .print-only{display:block!important;}
+  .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid;}
+  table{page-break-inside:auto;}
+  tr{page-break-inside:avoid;}
+}
+.print-only{display:none;}
+.print-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--navy);}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .fg2{grid-template-columns:1fr;}
+  .fg2 .fg.full{grid-column:span 1;}
+  .fin-row{grid-template-columns:1fr 1fr;gap:0.5rem;}
+  .fin-row .btn{grid-column:span 2;}
+}
+</style>
+</head>
+<body>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+  <div style="color:white;">
+    <div style="font-weight:500;font-size:0.9rem;">I-install ang Oragon Sikap App</div>
+    <div style="font-size:0.78rem;opacity:0.7;">I-add sa iyong home screen — libre, walang Play Store</div>
+  </div>
+  <div style="display:flex;gap:0.5rem;">
+    <button class="btn btn-gold btn-sm" onclick="installApp()">I-install</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:white;" onclick="dismissInstall()">✕</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Oragon Sikap</div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showPage('apply')">🏦 Apply</button>
+    <button class="tab-btn" onclick="showPage('track')">🔍 Track</button>
+    <button class="tab-btn" onclick="showPage('pay')">💸 Bayad</button>
+    <button class="tab-btn" onclick="showPage('admin')">🔐 Admin</button>
+  </div>
+</nav>
+
+<!-- ===== APPLY PAGE ===== -->
+<div class="page active" id="page-apply">
+<div class="inner">
+  <div class="sec-head">
+    <div><div class="sec-eyebrow">Loan Application</div><h1>Mag-apply ng Pautang</h1></div>
+  </div>
+
+  <div class="steps">
+    <div class="step active" id="s1"><div class="step-dot">1</div><div class="step-label">Personal</div></div>
+    <div class="step" id="s2"><div class="step-dot">2</div><div class="step-label">Negosyo</div></div>
+    <div class="step" id="s3"><div class="step-dot">3</div><div class="step-label">Loan</div></div>
+    <div class="step" id="s4"><div class="step-dot">4</div><div class="step-label">Submit</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card" id="fs1">
+    <div class="card-title">Personal na Impormasyon</div>
+    <div class="fg2">
+      <div class="fg"><label>Apelyido *</label><input id="a-lname" placeholder="De la Cruz"/></div>
+      <div class="fg"><label>Pangalan *</label><input id="a-fname" placeholder="Maria"/></div>
+      <div class="fg"><label>Gitnang Pangalan</label><input id="a-mname" placeholder="Santos"/></div>
+      <div class="fg"><label>Petsa ng Kapanganakan *</label><input type="date" id="a-bday"/></div>
+      <div class="fg"><label>Kasarian *</label>
+        <select id="a-gender"><option value="">Pumili...</option><option>Babae</option><option>Lalaki</option></select></div>
+      <div class="fg"><label>Katayuang Sibil</label>
+        <select id="a-civil"><option value="">Pumili...</option><option>Solong-solong</option><option>Kasal</option><option>Biyudo/Biyuda</option><option>Hiwalay</option></select></div>
+      <div class="fg"><label>Cellphone * (para sa tracking)</label><input type="tel" id="a-phone" placeholder="09XX-XXX-XXXX"/></div>
+      <div class="fg"><label>GCash Number</label><input type="tel" id="a-gcash" placeholder="09XX-XXX-XXXX"/></div>
+      <div class="fg full"><label>Kumpletong Address *</label>
+        <input id="a-address" placeholder="Sitio, Barangay, Lungsod, Lalawigan"/></div>
+      <div class="fg"><label>Uri ng Valid ID</label>
+        <select id="a-idtype"><option value="">Pumili...</option>
+          <option>PhilSys ID</option><option>Voter's ID</option><option>Driver's License</option>
+          <option>Passport</option><option>UMID</option><option>Barangay ID</option></select></div>
+      <div class="fg"><label>ID Number</label><input id="a-idnum" placeholder="ID Number"/></div>
+    </div>
+    <div style="text-align:right;margin-top:0.75rem;">
+      <button class="btn btn-gold" onclick="applyNext(1)">Susunod →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card" id="fs2" style="display:none;">
+    <div class="card-title">Impormasyon ng Negosyo</div>
+    <div class="fg2">
+      <div class="fg full"><label>Uri ng Negosyo *</label>
+        <select id="a-biztype"><option value="">Pumili...</option>
+          <option>Tindahan / Sari-sari Store</option><option>Pagkain at Inumin</option>
+          <option>Pagsasaka / Pangingisda</option><option>Panahi / Disenyo</option>
+          <option>Sasakyan / Transportsyon</option><option>Online Selling</option>
+          <option>Serbisyo</option><option>Iba pa</option></select></div>
+      <div class="fg full"><label>Pangalan ng Negosyo (kung mayroon)</label>
+        <input id="a-bizname" placeholder="Halimbawa: Maria's Store"/></div>
+      <div class="fg"><label>Gaano na katagal?</label>
+        <select id="a-bizage"><option value="">Pumili...</option>
+          <option>Bago pa lang</option><option>1-2 taon</option>
+          <option>3-5 taon</option><option>Mahigit 5 taon</option></select></div>
+      <div class="fg"><label>Kita Bawat Buwan</label>
+        <select id="a-income"><option value="">Pumili...</option>
+          <option>Wala pang ₱5,000</option><option>₱5,000-₱10,000</option>
+          <option>₱10,001-₱20,000</option><option>₱20,001-₱50,000</option>
+          <option>Mahigit ₱50,000</option></select></div>
+      <div class="fg full"><label>Paano gagamitin ang pautang? *</label>
+        <textarea id="a-purpose" placeholder="Ilarawan ang layunin ng pautang..."></textarea></div>
+      <div class="fg full"><label>May ibang pautang ka ba ngayon?</label>
+        <select id="a-existloan"><option value="">Pumili...</option>
+          <option>Wala</option><option>Mayroon — sa bangko</option>
+          <option>Mayroon — sa ibang microfinance</option>
+          <option>Mayroon — sa kamag-anak/kaibigan</option></select></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:0.75rem;">
+      <button class="btn btn-outline" onclick="applyPrev(2)">← Bumalik</button>
+      <button class="btn btn-gold" onclick="applyNext(2)">Susunod →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card" id="fs3" style="display:none;">
+    <div class="card-title">Detalye ng Pautang</div>
+    <div class="fg2">
+      <div class="fg"><label>Uri ng Loan *</label>
+        <select id="a-loantype"><option value="">Pumili...</option>
+          <option>Starter Loan (₱2,000–₱5,000)</option>
+          <option>Growth Loan (₱6,000–₱15,000)</option>
+          <option>Business Loan (₱16,000–₱50,000)</option>
+          <option>Group Loan</option>
+          <option>Emergency Loan (₱1,000–₱10,000)</option></select></div>
+      <div class="fg"><label>Halagang Hihiramin *</label>
+        <input type="number" id="a-amount" placeholder="₱ Halaga" min="1000" max="50000"/></div>
+      <div class="fg"><label>Nais na Takda</label>
+        <select id="a-term"><option value="">Pumili...</option>
+          <option>4 linggo</option><option>8 linggo</option>
+          <option>3 buwan</option><option>6 buwan</option><option>12 buwan</option></select></div>
+      <div class="fg"><label>Paraan ng Bayad</label>
+        <select id="a-paymode"><option value="">Pumili...</option>
+          <option>Bawat linggo</option><option>Bawat 2 linggo</option><option>Bawat buwan</option></select></div>
+      <div class="fg full"><label>Emergency Contact (Pangalan at Relasyon)</label>
+        <input id="a-ecname" placeholder="Juan De la Cruz — Asawa"/></div>
+      <div class="fg"><label>Emergency Contact (Telepono)</label>
+        <input type="tel" id="a-ecphone" placeholder="09XX-XXX-XXXX"/></div>
+      <div class="fg"><label>Co-maker (kung mayroon)</label>
+        <input id="a-comaker" placeholder="Pangalan ng Co-maker"/></div>
+      <div class="fg"><label>Disbursement Officer</label>
+        <select id="a-disburse"><option value="">Pumili...</option></select></div>
+      <div class="fg"><label>Assigned Collector</label>
+        <select id="a-collector"><option value="">Pumili...</option></select></div>
+    </div>
+    <div class="alert alert-info">ℹ️ Ang interest rate at payment schedule ay ipaaalam pagkatapos ng pag-apruba.</div>
+    <div style="display:flex;justify-content:space-between;margin-top:0.75rem;">
+      <button class="btn btn-outline" onclick="applyPrev(3)">← Bumalik</button>
+      <button class="btn btn-gold" onclick="applyNext(3)">Susunod →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="card" id="fs4" style="display:none;">
+    <div class="card-title">Suriin at I-submit</div>
+    <div class="alert alert-warn">⚠️ Siguraduhing tama ang lahat ng impormasyon bago mag-submit.</div>
+    <div id="review-box" style="background:var(--cream);border-radius:6px;padding:1.25rem;margin:0.75rem 0;font-size:0.85rem;line-height:2;"></div>
+    <div style="display:flex;gap:0.6rem;align-items:flex-start;margin:0.75rem 0;">
+      <input type="checkbox" id="chk1" style="margin-top:3px;width:15px;height:15px;flex-shrink:0;"/>
+      <label for="chk1" style="text-transform:none;letter-spacing:0;font-weight:400;font-size:0.83rem;cursor:pointer;color:var(--navy);">
+        Tinatanggap ko na ang lahat ng impormasyong ibinigay ko ay tama at totoo.
+      </label>
+    </div>
+    <div style="display:flex;gap:0.6rem;align-items:flex-start;margin:0.75rem 0;">
+      <input type="checkbox" id="chk2" style="margin-top:3px;width:15px;height:15px;flex-shrink:0;"/>
+      <label for="chk2" style="text-transform:none;letter-spacing:0;font-weight:400;font-size:0.83rem;cursor:pointer;color:var(--navy);">
+        Pumapayag ako na makipag-ugnayan sa akin ang Oragon Sikap para sa aking aplikasyon.
+      </label>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+      <button class="btn btn-outline" onclick="applyPrev(4)">← Bumalik</button>
+      <button class="btn btn-gold" onclick="submitApp()">✓ I-submit</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="card" id="fs-success" style="display:none;text-align:center;padding:2.5rem 1.5rem;">
+    <div style="font-size:2.5rem;margin-bottom:0.75rem;">✅</div>
+    <div class="card-title">Natanggap ang Aplikasyon!</div>
+    <p style="color:var(--gray);margin:0.75rem 0 1.25rem;line-height:1.7;font-size:0.9rem;">
+      Makikipag-ugnayan kami sa inyo sa loob ng <strong>1-3 araw</strong>.
+    </p>
+    <div style="background:var(--navy);color:var(--white);border-radius:8px;padding:1.25rem;margin:1rem 0;">
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem;">Reference Number</div>
+      <div id="success-ref" style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);"></div>
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.3rem;">I-save ito para ma-track ang inyong aplikasyon</div>
+    </div>
+    <button class="btn btn-navy" onclick="showPage('track')">I-track ang Aplikasyon</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== TRACK PAGE ===== -->
+<div class="page" id="page-track">
+<div class="inner">
+  <div class="sec-head">
+    <div><div class="sec-eyebrow">Loan Tracker</div><h1>I-track ang Inyong Pautang</h1></div>
+  </div>
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.6rem;align-items:flex-end;">
+      <div class="fg" style="margin:0;"><label>Reference Number o Cellphone</label>
+        <input id="track-input" placeholder="OS-2026-0001 o 09XX-XXX-XXXX"/></div>
+      <button class="btn btn-navy" onclick="doTrack()">Hanapin</button>
+    </div>
+  </div>
+  <div id="track-result" style="display:none;">
+    <div class="tracker-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem;">
+        <div>
+          <div style="font-family:'Playfair Display',serif;color:var(--gold);font-size:1.1rem;" id="tr-ref"></div>
+          <div style="color:rgba(255,255,255,0.65);font-size:0.82rem;" id="tr-name"></div>
+        </div>
+        <div id="tr-badge"></div>
+      </div>
+      <div style="font-size:2rem;font-weight:300;" id="tr-amount"></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(255,255,255,0.5);">
+        <span>Nabayaran: <span id="tr-paid" style="color:var(--gold);"></span></span>
+        <span>Natitira: <span id="tr-left" style="color:white;"></span></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="tr-pct" style="width:0%"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin:0.75rem 0;font-size:0.78rem;">
+        <div><div style="color:rgba(255,255,255,0.45);">Petsa ng Pag-apruba</div><div id="tr-date" style="color:white;margin-top:0.2rem;"></div></div>
+        <div><div style="color:rgba(255,255,255,0.45);">Susunod na Bayad</div><div id="tr-next" style="color:var(--gold-light);margin-top:0.2rem;"></div></div>
+        <div><div style="color:rgba(255,255,255,0.45);">Dapat Bayaran</div><div id="tr-due" style="color:white;margin-top:0.2rem;"></div></div>
+      </div>
+      <div id="tr-timeline"></div>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+      <div style="font-weight:500;margin-bottom:0.75rem;">Susunod na Hakbang</div>
+      <div id="tr-steps" style="font-size:0.85rem;color:var(--gray);line-height:1.8;"></div>
+      <button class="btn btn-gold" style="margin-top:1rem;" onclick="showPage('pay')">💸 Magbayad Ngayon</button>
+    </div>
+  </div>
+  <div id="track-none" style="display:none;">
+    <div class="card" style="text-align:center;padding:2.5rem;">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">🔍</div>
+      <div style="font-weight:500;">Walang nahanap</div>
+      <div style="color:var(--gray);font-size:0.83rem;margin-top:0.4rem;">Tiyaking tama ang reference number o cellphone number.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAY PAGE ===== -->
+<div class="page" id="page-pay">
+<div class="inner">
+  <div class="sec-head">
+    <div><div class="sec-eyebrow">Pagbabayad</div><h1>Magbayad ng Pautang</h1></div>
+  </div>
+  <div class="alert alert-info">ℹ️ Direkta sa aming GCash o InstaPay ang lahat ng bayad. Huwag kalimutang magpadala ng screenshot para sa confirmation.</div>
+
+  <div class="card">
+    <div class="card-title" style="font-size:1rem;">Hakbang 1 — Alamin ang Inyong Bayad</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.6rem;align-items:flex-end;margin-top:0.75rem;">
+      <div class="fg" style="margin:0;"><label>Reference Number</label>
+        <input id="pay-ref-in" placeholder="OS-2026-0001"/></div>
+      <button class="btn btn-navy btn-sm" onclick="lookupPay()">Hanapin</button>
+    </div>
+    <div id="pay-info" style="display:none;background:var(--cream);border-radius:6px;padding:1rem;margin-top:0.75rem;font-size:0.85rem;">
+      <div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid rgba(10,22,40,0.06);">
+        <span style="color:var(--gray);">Borrower</span><span id="pi-name" style="font-weight:500;"></span></div>
+      <div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid rgba(10,22,40,0.06);">
+        <span style="color:var(--gray);">Loan</span><span id="pi-loan" style="font-weight:500;"></span></div>
+      <div style="display:flex;justify-content:space-between;padding:0.5rem 0 0;">
+        <span style="color:var(--navy);font-weight:500;">Dapat Bayaran Ngayon</span>
+        <span id="pi-due" style="font-family:'Playfair Display',serif;font-size:1.2rem;"></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="font-size:1rem;margin-bottom:1rem;">Hakbang 2 — Pumili ng Paraan ng Bayad</div>
+    <div class="gcash-box">
+      <div class="gcash-logo">GCash</div>
+      <div style="font-size:0.75rem;opacity:0.7;">IPADALA DITO:</div>
+      <div class="gcash-num">0917-XXX-XXXX</div>
+      <div style="font-size:0.8rem;opacity:0.75;">ORAGON SIKAP MICROFINANCE INC.</div>
+    </div>
+    <div class="instapay-box">
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.3rem;">InstaPay / Bank Transfer</div>
+      <div style="font-size:0.75rem;opacity:0.75;margin-bottom:0.5rem;">Para sa may online banking (BDO, BPI, Metrobank, etc.)</div>
+      <div style="font-size:1.1rem;font-weight:300;letter-spacing:0.05em;">XXXX-XXXX-XXXX-XXXX</div>
+      <div style="font-size:0.8rem;opacity:0.75;margin-top:0.3rem;">BDO / ORAGON SIKAP MICROFINANCE INC.</div>
+    </div>
+    <div style="font-size:0.82rem;color:var(--gray);line-height:1.8;margin-top:0.5rem;">
+      <strong style="color:var(--navy);">Sa GCash:</strong> Send Money → i-type ang numero → ilagay ang inyong <strong>Reference Number</strong> sa "Note" → Send<br/>
+      <strong style="color:var(--navy);">Sa InstaPay:</strong> I-type ang account number → ilagay ang Reference Number sa "Remarks" → Confirm
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="font-size:1rem;margin-bottom:1rem;">Hakbang 3 — I-confirm ang Bayad</div>
+    <div class="fg2">
+      <div class="fg"><label>Reference Number</label><input id="cf-ref" placeholder="OS-2026-0001"/></div>
+      <div class="fg"><label>Pangalan</label><input id="cf-name" placeholder="Inyong pangalan"/></div>
+      <div class="fg"><label>GCash / Bank Ref No.</label><input id="cf-gcref" placeholder="Transaction Reference"/></div>
+      <div class="fg"><label>Halagang Napadala</label><input type="number" id="cf-amt" placeholder="₱ Halaga"/></div>
+      <div class="fg"><label>Paraan ng Bayad</label>
+        <select id="cf-method"><option>GCash</option><option>InstaPay</option><option>Bank Transfer</option></select></div>
+      <div class="fg"><label>Petsa ng Bayad</label><input type="date" id="cf-date"/></div>
+      <div class="fg full"><label>Mensahe (opsyonal)</label><textarea id="cf-msg" placeholder="Anumang karagdagang mensahe..."></textarea></div>
+    </div>
+    <div class="alert alert-warn">📸 I-screenshot ang inyong transaction at ipadala sa aming Messenger o WhatsApp para mas mabilis na ma-verify ang inyong bayad.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.75rem;">
+      <a href="https://m.me/OragonSikap" target="_blank" class="btn btn-navy" style="text-decoration:none;">📱 Messenger</a>
+      <a href="https://wa.me/63917XXXXXXX" target="_blank" class="btn btn-outline" style="text-decoration:none;">💬 WhatsApp</a>
+    </div>
+    <button class="btn btn-gold" onclick="confirmPay()" style="width:100%;margin-top:0.6rem;">✓ I-confirm ang Aking Bayad</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div class="page" id="page-admin">
+  <!-- LOGIN -->
+  <div id="admin-login" style="max-width:380px;margin:0 auto;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">🔐</div>
+      <div class="card-title">Admin Login</div>
+      <div class="card-sub">Para sa authorized na staff lamang.</div>
+      <div class="fg"><label>Password</label><input type="password" id="adm-pw" placeholder="••••••••"/></div>
+      <button class="btn btn-navy" onclick="adminIn()" style="width:100%;margin-top:0.5rem;">Pumasok</button>
+      <div id="adm-err" style="color:#dc2626;font-size:0.8rem;margin-top:0.6rem;display:none;">Mali ang password. Subukan ulit.</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="admin-panel" style="display:none;">
+  <div class="inner-wide">
+    <div class="sec-head">
+      <div><div class="sec-eyebrow">Admin Dashboard</div><h1>Oragon Sikap Management</h1></div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ I-print</button>
+        <button class="btn btn-outline btn-sm no-print" onclick="adminOut()">Lumabas</button>
+      </div>
+    </div>
+
+    <!-- PRINT HEADER (visible on print only) -->
+    <div class="print-only print-header">
+      <div style="font-family:'Playfair Display',serif;font-size:1.4rem;">Oragon Sikap Microfinance Inc.</div>
+      <div style="font-size:0.85rem;color:#666;margin-top:0.3rem;">Zone 6, San Felipe, Naga City, Camarines Sur | SEC-Registered Non-Stock Corporation</div>
+      <div style="font-size:0.8rem;color:#666;">Petsa ng Pag-print: <span id="print-date"></span></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card gold-a"><div class="stat-num" id="st-active">0</div><div class="stat-label">Aktibong Pautang</div></div>
+      <div class="stat-card green-a"><div class="stat-num" id="st-outstanding">₱0</div><div class="stat-label">Total Outstanding</div></div>
+      <div class="stat-card blue-a"><div class="stat-num" id="st-pending">0</div><div class="stat-label">Bagong Aplikasyon</div></div>
+      <div class="stat-card red-a"><div class="stat-num" id="st-overdue">0</div><div class="stat-label">Overdue</div></div>
+    </div>
+
+    <!-- ADMIN TABS -->
+    <div class="admin-tabs no-print">
+      <button class="atab active" onclick="showAdminTab('loans')">📋 Loans</button>
+      <button class="atab" onclick="showAdminTab('collectors')">👤 Collectors</button>
+      <button class="atab" onclick="showAdminTab('ledger')">📖 Ledger</button>
+      <button class="atab" onclick="showAdminTab('dst')">🧾 DST</button>
+      <button class="atab" onclick="showAdminTab('expenses')">📤 Expenses</button>
+      <button class="atab" onclick="showAdminTab('pl')">📊 P&L</button>
+      <button class="atab" onclick="showAdminTab('bir')">🏛️ BIR Taxes</button>
+    </div>
+
+    <!-- TAB: LOANS -->
+    <div id="atab-loans">
+      <!-- Pending Applications -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="font-weight:500;">Bagong Aplikasyon</div>
+          <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+        </div>
+        <div class="tbl-wrap">
+          <table id="tbl-pending">
+            <thead><tr><th>Ref #</th><th>Pangalan</th><th>Loan Type</th><th>Halaga</th><th>Petsa</th><th>Status</th><th class="no-print">Aksyon</th></tr></thead>
+            <tbody id="tbody-pending"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Active Loans -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="font-weight:500;">Aktibong Pautang</div>
+          <button class="btn btn-gold btn-sm no-print" onclick="openNewLoan()">+ Bagong Loan</button>
+        </div>
+        <div class="tbl-wrap">
+          <table id="tbl-loans">
+            <thead><tr><th>Ref #</th><th>Borrower</th><th>Principal</th><th>Interest</th><th>DST</th><th>Collector</th><th>Nabayaran</th><th>Natitira</th><th>Next Due</th><th>Status</th></tr></thead>
+            <tbody id="tbody-loans"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: LEDGER -->
+    <div id="atab-ledger" style="display:none;">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="font-weight:500;">Loan Ledger — Lahat ng Transactions</div>
+          <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap;" class="no-print">
+          <select id="ledger-month" onchange="renderLedger()" style="width:auto;padding:0.45rem 0.75rem;font-size:0.83rem;">
+            <option value="">Lahat ng Buwan</option>
+            <option>Enero 2026</option><option>Pebrero 2026</option><option>Marso 2026</option>
+            <option>Abril 2026</option><option>Mayo 2026</option><option>Hunyo 2026</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Petsa</th><th>Ref #</th><th>Borrower</th><th>Uri</th><th>Principal</th><th>Interest</th><th>DST</th><th>Total</th></tr></thead>
+            <tbody id="tbody-ledger"></tbody>
+            <tfoot><tr><td colspan="4"><strong>KABUUAN</strong></td>
+              <td id="led-principal" style="color:var(--green);font-weight:500;"></td>
+              <td id="led-interest" style="color:var(--green);font-weight:500;"></td>
+              <td id="led-dst" style="color:var(--green);font-weight:500;"></td>
+              <td id="led-total" style="color:var(--navy);font-weight:600;font-family:'Playfair Display',serif;"></td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: DOC STAMP -->
+    <div id="atab-dst" style="display:none;">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="font-weight:500;">Documentary Stamp Tax (DST)</div>
+          <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+        </div>
+        <div class="alert alert-info" style="margin-bottom:1rem;">
+          📋 Base sa BIR: DST = ₱1.50 bawat ₱200 ng loan amount (o bahagi nito). Halimbawa: ₱5,000 loan → ₱1.50 × 25 = <strong>₱37.50 DST</strong>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Petsa</th><th>Ref #</th><th>Borrower</th><th>Loan Amount</th><th>DST (₱1.50/₱200)</th><th>Status</th></tr></thead>
+            <tbody id="tbody-dst"></tbody>
+            <tfoot><tr>
+              <td colspan="4"><strong>KABUUANG DST</strong></td>
+              <td id="dst-total" style="color:var(--navy);font-weight:600;font-family:'Playfair Display',serif;"></td>
+              <td></td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: EXPENSES -->
+    <div id="atab-expenses" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" class="expense-grid">
+
+        <!-- SALARY -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <div style="font-weight:500;">👤 Salary ng Staff</div>
+            <button class="btn btn-gold btn-sm no-print" onclick="addStaff()">+ Staff</button>
+          </div>
+          <div id="salary-list"></div>
+          <div style="border-top:2px solid rgba(10,22,40,0.08);margin-top:0.75rem;padding-top:0.75rem;display:flex;justify-content:space-between;font-weight:500;font-size:0.9rem;">
+            <span>Kabuuang Salary</span><span id="salary-total" style="color:var(--red);">₱0</span>
+          </div>
+        </div>
+
+        <!-- CAPITAL -->
+        <div class="card">
+          <div style="font-weight:500;margin-bottom:0.75rem;">💰 Capital Movement</div>
+          <div id="capital-list"></div>
+          <div style="margin-top:0.5rem;" class="no-print">
+            <div class="fg2" style="margin-bottom:0.5rem;">
+              <div class="fg" style="margin:0;"><label>Uri</label>
+                <select id="cap-type"><option value="in">Capital In (Dagdag)</option><option value="out">Capital Withdrawal</option></select></div>
+              <div class="fg" style="margin:0;"><label>Halaga</label><input type="number" id="cap-amt" placeholder="₱"/></div>
+            </div>
+            <div class="fg" style="margin-bottom:0.5rem;"><label>Dahilan / Tala</label><input id="cap-note" placeholder="Halimbawa: Dagdag na puhunan ni Pastor Sal"/></div>
+            <div class="fg" style="margin-bottom:0.5rem;"><label>Petsa</label><input type="date" id="cap-date"/></div>
+            <button class="btn btn-navy btn-sm" onclick="addCapital()" style="width:100%;">+ Idagdag</button>
+          </div>
+          <div style="border-top:2px solid rgba(10,22,40,0.08);margin-top:0.75rem;padding-top:0.75rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.4rem;">
+              <span style="color:var(--gray);">Total Capital In</span><span id="cap-in-total" style="color:var(--green);font-weight:500;">₱0</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
+              <span style="color:var(--gray);">Total Withdrawal</span><span id="cap-out-total" style="color:var(--red);font-weight:500;">₱0</span></div>
+          </div>
+        </div>
+
+        <!-- OPERATING EXPENSES -->
+        <div class="card" style="grid-column:span 2;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+            <div style="font-weight:500;">🏢 Operating Expenses</div>
+            <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <div class="no-print" style="margin-bottom:0.75rem;">
+            <div class="fin-row">
+              <div class="fg" style="margin:0;"><label>Petsa</label><input type="date" id="exp-date"/></div>
+              <div class="fg" style="margin:0;"><label>Uri ng Gastos</label>
+                <select id="exp-cat">
+                  <option>Supplies / Kagamitan</option><option>Utilities</option>
+                  <option>Transportation</option><option>Communication</option>
+                  <option>Office Rent</option><option>BIR / Fees</option><option>Iba pa</option>
+                </select></div>
+              <div class="fg" style="margin:0;"><label>Halaga</label><input type="number" id="exp-amt" placeholder="₱"/></div>
+              <button class="btn btn-navy btn-sm" onclick="addExpense()">+ Idagdag</button>
+            </div>
+            <div class="fg" style="margin:0;"><label>Detalye / Tala</label><input id="exp-note" placeholder="Halimbawa: Bondpaper, staple, etc."/></div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Petsa</th><th>Uri</th><th>Detalye</th><th>Halaga</th></tr></thead>
+              <tbody id="tbody-expenses"></tbody>
+              <tfoot><tr><td colspan="3"><strong>KABUUANG GASTOS</strong></td>
+                <td id="exp-total" style="color:var(--red);font-weight:600;"></td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: P&L -->
+    <div id="atab-pl" style="display:none;">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div>
+            <div style="font-weight:500;">Monthly Profit & Loss Statement</div>
+            <div style="font-size:0.78rem;color:var(--gray);margin-top:0.2rem;">Oragon Sikap Microfinance Inc.</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;" class="no-print">
+            <select id="pl-month" onchange="renderPL()" style="width:auto;padding:0.45rem 0.75rem;font-size:0.83rem;">
+              <option>Marso 2026</option><option>Pebrero 2026</option><option>Enero 2026</option>
+            </select>
+            <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ Print</button>
+          </div>
+        </div>
+
+        <div id="pl-content">
+          <!-- INCOME -->
+          <div class="pl-section">
+            <div class="pl-title">KITA (INCOME)</div>
+            <div class="pl-row"><span>Interest na Nakolekta</span><span id="pl-interest" style="color:var(--green);font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>Documentary Stamp Tax Collected</span><span id="pl-dst-col" style="color:var(--green);font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>Service Fees</span><span style="color:var(--green);font-weight:500;">₱0</span></div>
+            <div class="pl-row total"><span>KABUUANG KITA</span><span id="pl-total-inc" style="color:var(--green);font-family:'Playfair Display',serif;font-size:1.05rem;">₱0</span></div>
+          </div>
+
+          <!-- EXPENSES -->
+          <div class="pl-section">
+            <div class="pl-title">GASTOS (EXPENSES)</div>
+            <div class="pl-row"><span>Salary ng Staff</span><span id="pl-salary" style="color:var(--red);font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>Operating Expenses</span><span id="pl-opex" style="color:var(--red);font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>DST Remitted sa BIR</span><span id="pl-dst-remit" style="color:var(--red);font-weight:500;">₱0</span></div>
+            <div class="pl-row total"><span>KABUUANG GASTOS</span><span id="pl-total-exp" style="color:var(--red);font-family:'Playfair Display',serif;font-size:1.05rem;">₱0</span></div>
+          </div>
+
+          <!-- NET -->
+          <div class="pl-row net-income">
+            <span>NET INCOME</span>
+            <span id="pl-net" style="color:var(--gold);font-size:1.2rem;">₱0</span>
+          </div>
+
+          <!-- CAPITAL -->
+          <div class="pl-section" style="margin-top:1.25rem;">
+            <div class="pl-title">CAPITAL POSITION</div>
+            <div class="pl-row"><span>Beginning Capital</span><span id="pl-cap-begin" style="font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>Dagdag na Capital</span><span id="pl-cap-in" style="color:var(--green);font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>Capital Withdrawal</span><span id="pl-cap-out" style="color:var(--red);font-weight:500;">₱0</span></div>
+            <div class="pl-row"><span>Net Income</span><span id="pl-cap-net" style="font-weight:500;">₱0</span></div>
+            <div class="pl-row total"><span>ENDING CAPITAL</span><span id="pl-cap-end" style="font-family:'Playfair Display',serif;font-size:1.05rem;">₱0</span></div>
+          </div>
+
+          <div style="margin-top:1rem;font-size:0.75rem;color:var(--gray);border-top:1px solid rgba(10,22,40,0.08);padding-top:0.75rem;">
+            Na-prepare ni: _________________________ | Petsa: _____________ | Para sa internal na gamit lamang.
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- TAB: COLLECTORS -->
+    <div id="atab-collectors" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <div style="font-weight:500;font-size:1rem;">Staff / Collectors</div>
+        <button class="btn btn-gold btn-sm no-print" onclick="openAddCollector()">+ Dagdag na Collector</button>
+      </div>
+      <div id="collectors-list"></div>
+      <div class="card" style="margin-top:0.5rem;">
+        <div style="font-weight:500;margin-bottom:1rem;">Commission Rate Settings (1%–30%)</div>
+        <div class="alert alert-info" style="margin-bottom:1rem;">💡 Commission = % ng interest na nakolekta ng bawat collector. I-adjust ang slider.</div>
+        <div id="commission-settings"></div>
+      </div>
+    </div>
+
+    <!-- TAB: BIR TAXES -->
+    <div id="atab-bir" style="display:none;">
+      <div style="background:var(--navy);border-radius:8px;padding:1.5rem;color:var(--white);margin-bottom:1.25rem;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:1rem;">🏛️ BIR Tax Summary</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:0.88rem;">
+          <span>Documentary Stamp Tax (DST)<br/><span style="font-size:0.72rem;opacity:0.6;">₱1.50 per ₱200 | BIR Form 2000 | Monthly</span></span>
+          <span id="bir-dst-total" style="font-weight:500;color:var(--gold-light);">₱0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:0.88rem;">
+          <span>Percentage Tax (3% ng gross interest)<br/><span style="font-size:0.72rem;opacity:0.6;">BIR Form 2551Q | Quarterly</span></span>
+          <span id="bir-pct-total" style="font-weight:500;color:var(--gold-light);">₱0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0;font-size:0.88rem;">
+          <span>Income Tax (20% ng net income)<br/><span style="font-size:0.72rem;opacity:0.6;">BIR Form 1702Q | Quarterly | Annual: Apr 15</span></span>
+          <span id="bir-inc-total" style="font-weight:500;color:var(--gold-light);">₱0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;background:rgba(201,168,76,0.15);border-radius:6px;margin-top:0.75rem;">
+          <span style="font-family:'Playfair Display',serif;font-size:1rem;">KABUUANG BABAYARAN SA BIR</span>
+          <span id="bir-grand-total" style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);">₱0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="font-weight:500;">📄 DST per Loan — Para sa BIR</div>
+          <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+        </div>
+        <div class="alert alert-info">DST = Loan ÷ 200 × ₱1.50 | I-file gamit ang BIR Form 2000 | Deadline: 5 araw pagkatapos ng buwan ng loan release</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Petsa</th><th>Ref #</th><th>Borrower</th><th>Loan Amount</th><th>DST</th><th>Status</th></tr></thead>
+            <tbody id="tbody-dst-bir"></tbody>
+            <tfoot><tr><td colspan="4"><strong>KABUUANG DST</strong></td><td id="dst-bir-grand" style="color:var(--navy);font-weight:600;font-family:'Playfair Display',serif;"></td><td></td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:0.75rem;">📊 Percentage Tax — 3% Quarterly</div>
+        <div class="alert alert-info">Form: BIR 2551Q | Q1: Apr 25 | Q2: Jul 25 | Q3: Oct 25 | Q4: Jan 25</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;">
+          <div style="background:var(--white);border-radius:8px;padding:1rem;border:1px solid rgba(10,22,40,0.08);text-align:center;">
+            <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin-bottom:0.3rem;">Q1 Jan-Mar</div>
+            <div id="pct-q1" style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);">₱0</div>
+            <div style="font-size:0.68rem;color:var(--gray);margin-top:0.2rem;">Due: Apr 25</div>
+          </div>
+          <div style="background:var(--white);border-radius:8px;padding:1rem;border:1px solid rgba(10,22,40,0.08);text-align:center;">
+            <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin-bottom:0.3rem;">Q2 Apr-Jun</div>
+            <div id="pct-q2" style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);">₱0</div>
+            <div style="font-size:0.68rem;color:var(--gray);margin-top:0.2rem;">Due: Jul 25</div>
+          </div>
+          <div style="background:var(--white);border-radius:8px;padding:1rem;border:1px solid rgba(10,22,40,0.08);text-align:center;">
+            <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin-bottom:0.3rem;">Q3 Jul-Sep</div>
+            <div id="pct-q3" style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);">₱0</div>
+            <div style="font-size:0.68rem;color:var(--gray);margin-top:0.2rem;">Due: Oct 25</div>
+          </div>
+          <div style="background:var(--white);border-radius:8px;padding:1rem;border:1px solid rgba(10,22,40,0.08);text-align:center;">
+            <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin-bottom:0.3rem;">Q4 Oct-Dec</div>
+            <div id="pct-q4" style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);">₱0</div>
+            <div style="font-size:0.68rem;color:var(--gray);margin-top:0.2rem;">Due: Jan 25</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:0.75rem;">💼 Income Tax — 20% ng Net Income</div>
+        <div class="alert alert-info">Form: BIR 1702Q (quarterly) + 1702-RT (annual, April 15) | Rate: 20% (net income ≤ ₱5M)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+          <div style="background:var(--white);border-radius:8px;padding:1.25rem;border-left:3px solid var(--gold);border:1px solid rgba(10,22,40,0.08);">
+            <div style="font-size:0.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.07em;">Gross Interest Income</div>
+            <div id="inc-gross" style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);">₱0</div>
+          </div>
+          <div style="background:var(--white);border-radius:8px;padding:1.25rem;border-left:3px solid var(--red);border:1px solid rgba(10,22,40,0.08);">
+            <div style="font-size:0.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.07em;">Allowable Deductions</div>
+            <div id="inc-deduct" style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);">₱0</div>
+          </div>
+          <div style="background:var(--white);border-radius:8px;padding:1.25rem;border-left:3px solid var(--green);border:1px solid rgba(10,22,40,0.08);">
+            <div style="font-size:0.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.07em;">Net Taxable Income</div>
+            <div id="inc-net" style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);">₱0</div>
+          </div>
+          <div style="background:var(--navy);border-radius:8px;padding:1.25rem;">
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em;">Income Tax Due (20%)</div>
+            <div id="inc-tax" style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold);">₱0</div>
+          </div>
+        </div>
+        <div style="background:var(--cream);border-radius:6px;padding:1rem;font-size:0.83rem;color:var(--gray);line-height:1.7;">
+          <strong style="color:var(--navy);">Allowable deductions:</strong> Collector commissions + Operating expenses + DST paid sa BIR + Iba pang documented na gastos
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="font-weight:500;">📅 BIR Tax Calendar 2026</div>
+          <button class="btn btn-print btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+        </div>
+        <div id="tax-calendar" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;"></div>
+        <div style="font-size:0.78rem;color:var(--gray);line-height:1.7;">
+          <strong>Legend:</strong> DST = Documentary Stamp Tax (monthly, 5 days after month-end) | PCT = Percentage Tax 2551Q (quarterly) | ITR = Income Tax Return (quarterly + annual April 15)
+        </div>
+      </div>
+    </div>
+  </div><!-- inner-wide -->
+  </div><!-- admin-panel -->
+</div><!-- page-admin -->
+
+<!-- MODAL: New Loan -->
+<div class="modal-bg" id="modal-loan">
+  <div class="modal">
+    <div class="modal-title">Bagong Loan Record</div>
+    <div class="fg2">
+      <div class="fg"><label>Ref # (Auto)</label><input id="nl-ref" readonly style="background:#f3f4f6;"/></div>
+      <div class="fg"><label>Pangalan ng Borrower *</label><input id="nl-name" placeholder="Buong pangalan"/></div>
+      <div class="fg"><label>Cellphone</label><input type="tel" id="nl-phone" placeholder="09XX-XXX-XXXX"/></div>
+      <div class="fg"><label>Principal Amount *</label><input type="number" id="nl-principal" placeholder="₱" oninput="calcDST()"/></div>
+      <div class="fg"><label>Interest Rate (%)</label><input type="number" id="nl-rate" placeholder="3" value="3" oninput="calcDST()"/></div>
+      <div class="fg"><label>DST (Auto-computed)</label><input id="nl-dst" readonly style="background:#f3f4f6;"/></div>
+      <div class="fg"><label>Takda</label>
+        <select id="nl-term"><option>4 linggo</option><option>8 linggo</option><option>3 buwan</option><option>6 buwan</option><option>12 buwan</option></select></div>
+      <div class="fg"><label>Paraan ng Bayad</label>
+        <select id="nl-paymode"><option>Bawat linggo</option><option>Bawat 2 linggo</option><option>Bawat buwan</option></select></div>
+      <div class="fg"><label>Petsa ng Release *</label><input type="date" id="nl-date"/></div>
+      <div class="fg"><label>Next Due Date</label><input type="date" id="nl-nextdue"/></div>
+    </div>
+    <div style="background:var(--cream);border-radius:6px;padding:0.9rem;margin:0.75rem 0;font-size:0.83rem;" id="nl-summary"></div>
+    <div style="display:flex;gap:0.6rem;margin-top:0.75rem;">
+      <button class="btn btn-outline" onclick="closeModal('modal-loan')" style="flex:1;">Kanselahin</button>
+      <button class="btn btn-gold" onclick="saveLoan()" style="flex:1;">✓ I-save ang Loan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add Staff -->
+<div class="modal-bg" id="modal-staff">
+  <div class="modal">
+    <div class="modal-title">Idagdag ang Staff</div>
+    <div class="fg"><label>Pangalan ng Staff *</label><input id="st-name" placeholder="Buong pangalan"/></div>
+    <div class="fg"><label>Posisyon / Titulo</label><input id="st-role" placeholder="Halimbawa: Loan Officer"/></div>
+    <div class="fg"><label>Buwanang Sahod (₱) *</label><input type="number" id="st-salary" placeholder="₱ Halaga"/></div>
+    <div class="fg"><label>Petsa ng Simula</label><input type="date" id="st-start"/></div>
+    <div style="display:flex;gap:0.6rem;margin-top:0.75rem;">
+      <button class="btn btn-outline" onclick="closeModal('modal-staff')" style="flex:1;">Kanselahin</button>
+      <button class="btn btn-gold" onclick="saveStaff()" style="flex:1;">✓ I-save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA STORE =====================
+let DB = {
+  loans: [
+    {ref:'OS-2026-0001',name:'Maria Cruz',phone:'09171234567',principal:8000,rate:3,dst:60,term:'8 linggo',paymode:'Bawat linggo',date:'2026-03-07',nextdue:'2026-03-28',paid:2000,status:'active'},
+    {ref:'OS-2026-0002',name:'Pedro Reyes',phone:'09181234567',principal:5000,rate:3,dst:37.5,term:'4 linggo',paymode:'Bawat linggo',date:'2026-02-14',nextdue:'2026-03-14',paid:1250,status:'overdue'},
+    {ref:'OS-2026-0003',name:'Luz Bautista',phone:'09191234567',principal:15000,rate:3,dst:112.5,term:'6 buwan',paymode:'Bawat buwan',date:'2026-01-10',nextdue:'2026-04-05',paid:9000,status:'active'},
+    {ref:'OS-2026-0004',name:'Remy Villanueva',phone:'09201234567',principal:3000,rate:3,dst:22.5,term:'4 linggo',paymode:'Bawat linggo',date:'2026-01-20',nextdue:'—',paid:3000,status:'paid'},
+  ],
+  pending: [
+    {ref:'OS-2026-0014',name:'Ana Garcia',phone:'09171234560',loantype:'Starter Loan',amount:4000,date:'2026-03-20'},
+    {ref:'OS-2026-0015',name:'Ben Santos',phone:'09181234560',loantype:'Growth Loan',amount:10000,date:'2026-03-21'},
+  ],
+  staff: [
+    {name:'Salvador A. Lobigan',role:'Manager / Loan Officer',salary:0,start:'2026-01-01'}
+  ],
+  capital: [
+    {type:'in',amount:50000,note:'Initial capital ng founder',date:'2026-01-01'},
+  ],
+  expenses: [
+    {date:'2026-03-10',cat:'Supplies / Kagamitan',note:'Bondpaper, folder, pens',amount:450},
+    {date:'2026-03-15',cat:'Communication',note:'Load para sa staff',amount:200},
+  ]
+};
+
+function peso(n){return '₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function computeDST(amt){return Math.ceil(amt/200)*1.5;}
+
+// ===================== PAGE SWITCHING =====================
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const tabs=['apply','track','pay','admin'];
+  document.querySelectorAll('.tab-btn')[tabs.indexOf(id)].classList.add('active');
+  if(id==='admin'&&document.getElementById('admin-panel').style.display!=='none')renderAll();
+}
+
+// ===================== APPLY =====================
+function updateStepUI(active){
+  for(let i=1;i<=4;i++){
+    const s=document.getElementById('s'+i);
+    s.classList.remove('active','done');
+    if(i<active)s.classList.add('done');
+    else if(i===active)s.classList.add('active');
+  }
+}
+function applyNext(from){
+  if(from===1&&(!document.getElementById('a-fname').value||!document.getElementById('a-lname').value||!document.getElementById('a-phone').value)){
+    alert('Pakipunan ang mga required na fields (*).');return;
+  }
+  if(from===3){buildReview();}
+  document.getElementById('fs'+from).style.display='none';
+  if(from<4)document.getElementById('fs'+(from+1)).style.display='block';
+  updateStepUI(from+1);
+}
+function applyPrev(from){
+  document.getElementById('fs'+from).style.display='none';
+  document.getElementById('fs'+(from-1)).style.display='block';
+  updateStepUI(from-1);
+}
+function buildReview(){
+  const f=(id)=>document.getElementById(id).value;
+  const d={
+    'Pangalan':f('a-fname')+' '+f('a-lname'),
+    'Cellphone':f('a-phone'),
+    'Address':f('a-address'),
+    'Uri ng Negosyo':f('a-biztype'),
+    'Uri ng Loan':f('a-loantype'),
+    'Halaga':'₱'+parseInt(f('a-amount')||0).toLocaleString(),
+    'Takda':f('a-term'),
+  };
+  document.getElementById('review-box').innerHTML=Object.entries(d).filter(([k,v])=>v&&v!=='₱0').map(([k,v])=>
+    `<div style="display:flex;justify-content:space-between;padding:0.25rem 0;border-bottom:1px solid rgba(10,22,40,0.05);">
+      <span style="color:var(--gray);">${k}</span><span style="font-weight:500;">${v}</span></div>`).join('');
+}
+function submitApp(){
+  if(!document.getElementById('chk1').checked||!document.getElementById('chk2').checked){
+    alert('Pakitanggap ang dalawang pahayag bago mag-submit.');return;
+  }
+  const ref='OS-2026-'+String(Math.floor(1000+Math.random()*9000));
+  document.getElementById('success-ref').textContent=ref;
+  document.getElementById('fs4').style.display='none';
+  document.getElementById('fs-success').style.display='block';
+  updateStepUI(5);
+}
+
+// ===================== TRACKER =====================
+function doTrack(){
+  const v=document.getElementById('track-input').value.trim().toUpperCase();
+  document.getElementById('track-result').style.display='none';
+  document.getElementById('track-none').style.display='none';
+  const loan=DB.loans.find(l=>l.ref===v||l.phone===v.replace(/-/g,''));
+  if(loan){fillTracker(loan);document.getElementById('track-result').style.display='block';}
+  else{document.getElementById('track-none').style.display='block';}
+}
+function fillTracker(l){
+  document.getElementById('tr-ref').textContent=l.ref;
+  document.getElementById('tr-name').textContent=l.name;
+  document.getElementById('tr-amount').textContent=peso(l.principal);
+  document.getElementById('tr-paid').textContent=peso(l.paid);
+  document.getElementById('tr-left').textContent=peso(l.principal-l.paid);
+  document.getElementById('tr-pct').style.width=Math.round(l.paid/l.principal*100)+'%';
+  document.getElementById('tr-date').textContent=l.date;
+  document.getElementById('tr-next').textContent=l.nextdue;
+  document.getElementById('tr-due').textContent=l.status==='paid'?'—':peso(l.principal*l.rate/100);
+  const bmap={active:'badge-active',overdue:'badge-overdue',paid:'badge-paid'};
+  const btxt={active:'Aktibo',overdue:'Overdue',paid:'Bayad na'};
+  document.getElementById('tr-badge').innerHTML=`<span class="badge ${bmap[l.status]}">${btxt[l.status]}</span>`;
+  document.getElementById('tr-steps').innerHTML=l.status==='active'
+    ?`<strong>1.</strong> Ang inyong susunod na bayad ay <strong>${peso(l.principal*l.rate/100)}</strong> sa <strong>${l.nextdue}</strong>.<br/><strong>2.</strong> Magpadala sa GCash o InstaPay at ipadala ang screenshot.<br/><strong>3.</strong> Makikita ang bayad dito sa loob ng 24 oras.`
+    :l.status==='overdue'?`⚠️ Ang inyong bayad ay overdue. Makipag-ugnayan sa amin agad para maiwasan ang penalties.`
+    :`✅ Bayad na ang inyong pautang. Salamat sa inyong katapatan!`;
+  document.getElementById('tr-timeline').innerHTML='';
+}
+
+// ===================== PAYMENT =====================
+function lookupPay(){
+  const ref=document.getElementById('pay-ref-in').value.trim().toUpperCase();
+  const loan=DB.loans.find(l=>l.ref===ref);
+  if(loan){
+    document.getElementById('pi-name').textContent=loan.name;
+    document.getElementById('pi-loan').textContent=peso(loan.principal);
+    document.getElementById('pi-due').textContent=peso(loan.principal*loan.rate/100);
+    document.getElementById('pay-info').style.display='block';
+  }else{alert('Hindi nahanap ang reference number.');}
+}
+function confirmPay(){alert('Salamat! Natanggap ang inyong confirmation. Ma-verify ang bayad sa loob ng 24 oras.');}
+
+// ===================== ADMIN =====================
+const ADM_PW='oragon2026';
+function adminIn(){
+  if(document.getElementById('adm-pw').value===ADM_PW){
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    document.getElementById('adm-err').style.display='none';
+    document.getElementById('print-date').textContent=new Date().toLocaleDateString('fil-PH');
+    renderAll();
+  }else{document.getElementById('adm-err').style.display='block';}
+}
+function adminOut(){
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-login').style.display='block';
+  document.getElementById('adm-pw').value='';
+}
+
+function showAdminTab(id){
+  ['loans','ledger','dst','expenses','pl'].forEach(t=>{
+    document.getElementById('atab-'+t).style.display=t===id?'block':'none';
+  });
+  document.querySelectorAll('.atab').forEach((b,i)=>{
+    b.classList.toggle('active',['loans','ledger','dst','expenses','pl'][i]===id);
+  });
+  if(id==='ledger')renderLedger();
+  if(id==='dst')renderDST();
+  if(id==='expenses')renderExpenses();
+  if(id==='pl')renderPL();
+}
+
+function renderAll(){
+  renderLoans();renderLedger();renderDST();renderExpenses();renderPL();renderStaff();renderCapital();
+  // Stats
+  const active=DB.loans.filter(l=>l.status==='active').length;
+  const overdue=DB.loans.filter(l=>l.status==='overdue').length;
+  const outstanding=DB.loans.filter(l=>l.status!=='paid').reduce((s,l)=>s+(l.principal-l.paid),0);
+  document.getElementById('st-active').textContent=active;
+  document.getElementById('st-outstanding').textContent=peso(outstanding);
+  document.getElementById('st-pending').textContent=DB.pending.length;
+  document.getElementById('st-overdue').textContent=overdue;
+}
+
+function renderLoans(){
+  // Pending
+  document.getElementById('tbody-pending').innerHTML=DB.pending.map(p=>`
+    <tr>
+      <td style="font-family:monospace;font-size:0.82rem;">${p.ref}</td>
+      <td><strong>${p.name}</strong><br/><span style="color:var(--gray);font-size:0.75rem;">${p.phone}</span></td>
+      <td>${p.loantype}</td>
+      <td><strong>${peso(p.amount)}</strong></td>
+      <td style="font-size:0.8rem;color:var(--gray);">${p.date}</td>
+      <td><span class="badge badge-pending">Pending</span></td>
+      <td class="no-print">
+        <button class="btn btn-green btn-sm" onclick="approvePending('${p.ref}')">✓ Aprubahan</button>
+        <button class="btn btn-red btn-sm" style="margin-left:3px;" onclick="declinePending('${p.ref}')">✗</button>
+      </td>
+    </tr>`).join('');
+
+  // Active loans
+  document.getElementById('tbody-loans').innerHTML=DB.loans.map(l=>`
+    <tr>
+      <td style="font-family:monospace;font-size:0.82rem;">${l.ref}</td>
+      <td><strong>${l.name}</strong></td>
+      <td>${peso(l.principal)}</td>
+      <td style="color:var(--green);">${peso(l.principal*l.rate/100)}</td>
+      <td style="color:var(--gray);">${peso(l.dst)}</td>
+      <td style="color:var(--green);">${peso(l.paid)}</td>
+      <td style="font-weight:500;">${peso(l.principal-l.paid)}</td>
+      <td style="font-size:0.82rem;${l.status==='overdue'?'color:var(--red);font-weight:500;':''}">${l.nextdue}</td>
+      <td><span class="badge badge-${l.status==='active'?'active':l.status==='overdue'?'overdue':'paid'}">${l.status==='active'?'Aktibo':l.status==='overdue'?'Overdue':'Bayad na'}</span></td>
+    </tr>`).join('');
+}
+
+function renderLedger(){
+  const rows=DB.loans.map(l=>({
+    date:l.date,ref:l.ref,name:l.name,type:'Loan Release',
+    principal:l.principal,interest:l.principal*l.rate/100,dst:l.dst,
+    total:l.principal+(l.principal*l.rate/100)+l.dst
+  }));
+  document.getElementById('tbody-ledger').innerHTML=rows.map(r=>`
+    <tr>
+      <td style="font-size:0.82rem;">${r.date}</td>
+      <td style="font-family:monospace;font-size:0.82rem;">${r.ref}</td>
+      <td>${r.name}</td>
+      <td><span class="badge badge-active">${r.type}</span></td>
+      <td style="color:var(--green);font-weight:500;">${peso(r.principal)}</td>
+      <td style="color:var(--green);">${peso(r.interest)}</td>
+      <td style="color:var(--gray);">${peso(r.dst)}</td>
+      <td style="font-weight:500;">${peso(r.total)}</td>
+    </tr>`).join('');
+  document.getElementById('led-principal').textContent=peso(rows.reduce((s,r)=>s+r.principal,0));
+  document.getElementById('led-interest').textContent=peso(rows.reduce((s,r)=>s+r.interest,0));
+  document.getElementById('led-dst').textContent=peso(rows.reduce((s,r)=>s+r.dst,0));
+  document.getElementById('led-total').textContent=peso(rows.reduce((s,r)=>s+r.total,0));
+}
+
+function renderDST(){
+  document.getElementById('tbody-dst').innerHTML=DB.loans.map(l=>`
+    <tr>
+      <td style="font-size:0.82rem;">${l.date}</td>
+      <td style="font-family:monospace;font-size:0.82rem;">${l.ref}</td>
+      <td>${l.name}</td>
+      <td>${peso(l.principal)}</td>
+      <td style="font-weight:500;color:var(--navy);">${peso(l.dst)}</td>
+      <td><span class="badge badge-approved">Narecord</span></td>
+    </tr>`).join('');
+  document.getElementById('dst-total').textContent=peso(DB.loans.reduce((s,l)=>s+l.dst,0));
+}
+
+function renderExpenses(){
+  document.getElementById('tbody-expenses').innerHTML=DB.expenses.map((e,i)=>`
+    <tr>
+      <td style="font-size:0.82rem;">${e.date}</td>
+      <td>${e.cat}</td>
+      <td style="color:var(--gray);font-size:0.83rem;">${e.note}</td>
+      <td style="color:var(--red);font-weight:500;">${peso(e.amount)}</td>
+    </tr>`).join('');
+  const expTotal=DB.expenses.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('exp-total').textContent=peso(expTotal);
+}
+
+function renderStaff(){
+  document.getElementById('salary-list').innerHTML=DB.staff.map((s,i)=>`
+    <div class="pay-row" style="background:rgba(10,22,40,0.02);margin-bottom:0.5rem;">
+      <div>
+        <div style="font-weight:500;font-size:0.88rem;">${s.name}</div>
+        <div style="font-size:0.75rem;color:var(--gray);">${s.role} · Simula: ${s.start}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:500;color:var(--red);">${s.salary>0?peso(s.salary):'Volunteer'}</div>
+        <button class="btn btn-red btn-sm no-print" onclick="removeStaff(${i})" style="font-size:0.7rem;padding:0.2rem 0.5rem;margin-top:0.2rem;">✕</button>
+      </div>
+    </div>`).join('');
+  const total=DB.staff.reduce((s,st)=>s+st.salary,0);
+  document.getElementById('salary-total').textContent=peso(total);
+}
+
+function renderCapital(){
+  document.getElementById('capital-list').innerHTML=DB.capital.map((c,i)=>`
+    <div class="pay-row ${c.type==='in'?'paid-r':'over-r'}" style="margin-bottom:0.4rem;">
+      <div>
+        <div style="font-size:0.8rem;font-weight:500;color:${c.type==='in'?'#15803d':'#dc2626'};">${c.type==='in'?'+ Capital In':'− Withdrawal'}</div>
+        <div style="font-size:0.75rem;color:var(--gray);">${c.note} · ${c.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span style="font-weight:500;color:${c.type==='in'?'#15803d':'#dc2626'};">${peso(c.amount)}</span>
+        <button class="btn btn-red btn-sm no-print" onclick="removeCapital(${i})" style="font-size:0.7rem;padding:0.2rem 0.4rem;">✕</button>
+      </div>
+    </div>`).join('');
+  const capIn=DB.capital.filter(c=>c.type==='in').reduce((s,c)=>s+c.amount,0);
+  const capOut=DB.capital.filter(c=>c.type==='out').reduce((s,c)=>s+c.amount,0);
+  document.getElementById('cap-in-total').textContent=peso(capIn);
+  document.getElementById('cap-out-total').textContent=peso(capOut);
+}
+
+function renderPL(){
+  const totalInterest=DB.loans.reduce((s,l)=>s+(l.principal*l.rate/100),0);
+  const totalDST=DB.loans.reduce((s,l)=>s+l.dst,0);
+  const totalInc=totalInterest+totalDST;
+  const totalSalary=DB.staff.reduce((s,st)=>s+st.salary,0);
+  const totalOpex=DB.expenses.reduce((s,e)=>s+e.amount,0);
+  const totalExp=totalSalary+totalOpex+totalDST;
+  const netInc=totalInc-totalExp;
+  const capIn=DB.capital.filter(c=>c.type==='in').reduce((s,c)=>s+c.amount,0);
+  const capOut=DB.capital.filter(c=>c.type==='out').reduce((s,c)=>s+c.amount,0);
+  const beginCap=capIn-capOut;
+  document.getElementById('pl-interest').textContent=peso(totalInterest);
+  document.getElementById('pl-dst-col').textContent=peso(totalDST);
+  document.getElementById('pl-total-inc').textContent=peso(totalInc);
+  document.getElementById('pl-salary').textContent=peso(totalSalary);
+  document.getElementById('pl-opex').textContent=peso(totalOpex);
+  document.getElementById('pl-dst-remit').textContent=peso(totalDST);
+  document.getElementById('pl-total-exp').textContent=peso(totalExp);
+  document.getElementById('pl-net').textContent=peso(netInc);
+  document.getElementById('pl-cap-begin').textContent=peso(beginCap);
+  document.getElementById('pl-cap-in').textContent=peso(capIn);
+  document.getElementById('pl-cap-out').textContent=peso(capOut);
+  document.getElementById('pl-cap-net').textContent=peso(netInc);
+  document.getElementById('pl-cap-end').textContent=peso(beginCap+netInc);
+  ['pl-interest','pl-dst-col','pl-total-inc','pl-cap-in'].forEach(id=>{
+    document.getElementById(id).style.color='var(--green)';});
+  ['pl-salary','pl-opex','pl-dst-remit','pl-total-exp','pl-cap-out'].forEach(id=>{
+    document.getElementById(id).style.color='var(--red)';});
+  document.getElementById('pl-net').style.color=netInc>=0?'var(--gold)':'var(--red)';
+}
+
+// ===================== MODALS =====================
+function openNewLoan(){
+  const next='OS-2026-'+String(DB.loans.length+10+1).padStart(4,'0');
+  document.getElementById('nl-ref').value=next;
+  document.getElementById('nl-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('nl-dst').value='';
+  document.getElementById('nl-summary').innerHTML='';
+  document.getElementById('modal-loan').classList.add('open');
+}
+function calcDST(){
+  const p=parseFloat(document.getElementById('nl-principal').value)||0;
+  const r=parseFloat(document.getElementById('nl-rate').value)||0;
+  const dst=computeDST(p);
+  const interest=p*r/100;
+  document.getElementById('nl-dst').value=peso(dst);
+  document.getElementById('nl-summary').innerHTML=p>0?`
+    <div style="display:flex;justify-content:space-between;font-size:0.83rem;padding:0.2rem 0;border-bottom:1px solid rgba(10,22,40,0.06);">
+      <span style="color:var(--gray);">Principal</span><span>${peso(p)}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:0.83rem;padding:0.2rem 0;border-bottom:1px solid rgba(10,22,40,0.06);">
+      <span style="color:var(--gray);">Interest (${r}%)</span><span style="color:var(--green);">+${peso(interest)}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:0.83rem;padding:0.2rem 0;border-bottom:1px solid rgba(10,22,40,0.06);">
+      <span style="color:var(--gray);">DST</span><span style="color:var(--gray);">+${peso(dst)}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:0.4rem 0;font-weight:600;">
+      <span>Total Receivable</span><span style="color:var(--navy);">${peso(p+interest+dst)}</span></div>`:'';
+}
+function saveLoan(){
+  const name=document.getElementById('nl-name').value.trim();
+  const principal=parseFloat(document.getElementById('nl-principal').value);
+  if(!name||!principal){alert('Pakipunan ang required fields.');return;}
+  const rate=parseFloat(document.getElementById('nl-rate').value)||3;
+  DB.loans.push({
+    ref:document.getElementById('nl-ref').value,
+    name,phone:document.getElementById('nl-phone').value,
+    principal,rate,dst:computeDST(principal),
+    term:document.getElementById('nl-term').value,
+    paymode:document.getElementById('nl-paymode').value,
+    date:document.getElementById('nl-date').value,
+    nextdue:document.getElementById('nl-nextdue').value,
+    paid:0,status:'active'
+  });
+  closeModal('modal-loan');renderAll();showAdminTab('loans');
+}
+
+function addStaff(){
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('st-start').value=today;
+  document.getElementById('modal-staff').classList.add('open');
+}
+function saveStaff(){
+  const name=document.getElementById('st-name').value.trim();
+  const salary=parseFloat(document.getElementById('st-salary').value)||0;
+  if(!name){alert('Pakipunan ang pangalan.');return;}
+  DB.staff.push({name,role:document.getElementById('st-role').value,salary,start:document.getElementById('st-start').value});
+  closeModal('modal-staff');renderStaff();renderPL();
+}
+function removeStaff(i){if(confirm('Alisin ang staff na ito?')){DB.staff.splice(i,1);renderStaff();renderPL();}}
+
+function addCapital(){
+  const type=document.getElementById('cap-type').value;
+  const amount=parseFloat(document.getElementById('cap-amt').value);
+  const note=document.getElementById('cap-note').value||'—';
+  const date=document.getElementById('cap-date').value;
+  if(!amount){alert('Pakienter ang halaga.');return;}
+  DB.capital.push({type,amount,note,date});
+  document.getElementById('cap-amt').value='';
+  document.getElementById('cap-note').value='';
+  renderCapital();renderPL();
+}
+function removeCapital(i){if(confirm('Alisin ang record na ito?')){DB.capital.splice(i,1);renderCapital();renderPL();}}
+
+function addExpense(){
+  const date=document.getElementById('exp-date').value;
+  const cat=document.getElementById('exp-cat').value;
+  const note=document.getElementById('exp-note').value||'—';
+  const amount=parseFloat(document.getElementById('exp-amt').value);
+  if(!amount||!date){alert('Pakipunan ang petsa at halaga.');return;}
+  DB.expenses.push({date,cat,note,amount});
+  document.getElementById('exp-amt').value='';
+  document.getElementById('exp-note').value='';
+  renderExpenses();renderPL();
+}
+
+function approvePending(ref){
+  const idx=DB.pending.findIndex(p=>p.ref===ref);
+  if(idx>-1){
+    const p=DB.pending[idx];
+    DB.loans.push({ref:p.ref,name:p.name,phone:p.phone,principal:p.amount,rate:3,dst:computeDST(p.amount),
+      term:'8 linggo',paymode:'Bawat linggo',date:new Date().toISOString().split('T')[0],nextdue:'',paid:0,status:'active'});
+    DB.pending.splice(idx,1);
+    renderAll();alert(`Approved! ${ref} — ${p.name} ay naadded sa aktibong loans.`);
+  }
+}
+function declinePending(ref){
+  if(confirm('I-decline ang aplikasyon na ito?')){
+    DB.pending=DB.pending.filter(p=>p.ref!==ref);renderAll();
+  }
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
+
+// ===================== PWA =====================
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').classList.add('show');
+});
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;dismissInstall();});}
+}
+function dismissInstall(){document.getElementById('install-banner').classList.remove('show');}
+window.addEventListener('appinstalled',()=>dismissInstall());
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+// Set today's date on payment form
+document.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  const cf=document.getElementById('cf-date');
+  if(cf)cf.value=today;
+  const ed=document.getElementById('exp-date');
+  if(ed)ed.value=today;
+  const cd=document.getElementById('cap-date');
+  if(cd)cd.value=today;
+});
+
+// ===== COLLECTORS =====
+let COLLECTORS = [
+  {name:'Pastor Sal',role:'Manager / Disbursement Officer',phone:'09170000000',rate:0,start:'2026-01-01'},
+  {name:'Ronie Delos Reyes',role:'Loan Collector',phone:'09171111111',rate:10,start:'2026-01-01'},
+  {name:'Ana Banta',role:'Loan Collector',phone:'09182222222',rate:10,start:'2026-01-15'},
+];
+
+function computeInterest2(loan){return loan.principal*(loan.rate||3)/100;}
+function computeDST2(amt){return Math.ceil(amt/200)*1.5;}
+function computeCommission2(loan){
+  const col=COLLECTORS.find(c=>c.name===loan.collector);
+  const rate=col?col.rate:0;
+  return computeInterest2(loan)*(rate/100);
+}
+
+function populateCollectorDropdowns(){
+  const opts='<option value="">Pumili...</option>'+COLLECTORS.map(c=>`<option>${c.name}</option>`).join('');
+  ['a-disburse','a-collector','nl-disburse','nl-collector-sel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){const v=el.value;el.innerHTML=opts;if(v)el.value=v;}
+  });
+}
+
+function renderCollectors(){
+  if(!document.getElementById('collectors-list'))return;
+  document.getElementById('collectors-list').innerHTML=COLLECTORS.map((c,i)=>{
+    const myLoans=DB.loans.filter(l=>l.collector===c.name);
+    const totalInt=myLoans.reduce((s,l)=>s+computeInterest2(l),0);
+    const comm=totalInt*(c.rate/100);
+    return `<div style="background:var(--white);border-radius:8px;padding:1.25rem;border:1px solid rgba(10,22,40,0.08);margin-bottom:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+        <div>
+          <div style="font-weight:500;font-size:0.95rem;">${c.name}</div>
+          <div style="font-size:0.75rem;color:var(--gray);">${c.role} · ${c.phone} · Simula: ${c.start}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;align-items:center;">
+          <span class="badge badge-active">${c.rate}% commission</span>
+          <button class="btn btn-red btn-sm no-print" onclick="removeCollector(${i})">✕</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+        <div style="text-align:center;padding:0.5rem;background:var(--cream);border-radius:6px;">
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--navy);">${myLoans.length}</div>
+          <div style="font-size:0.65rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;">Loans</div>
+        </div>
+        <div style="text-align:center;padding:0.5rem;background:var(--cream);border-radius:6px;">
+          <div style="font-family:'Playfair Display',serif;font-size:0.85rem;color:var(--navy);">${peso(totalInt)}</div>
+          <div style="font-size:0.65rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;">Interest</div>
+        </div>
+        <div style="text-align:center;padding:0.5rem;background:var(--cream);border-radius:6px;">
+          <div style="font-family:'Playfair Display',serif;font-size:0.85rem;color:var(--green);">${peso(comm)}</div>
+          <div style="font-size:0.65rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;">Commission</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('commission-settings').innerHTML=COLLECTORS.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem;background:var(--cream);border-radius:6px;margin-bottom:0.5rem;flex-wrap:wrap;">
+      <div style="min-width:160px;">
+        <div style="font-weight:500;font-size:0.9rem;">${c.name}</div>
+        <div style="font-size:0.75rem;color:var(--gray);">${c.role}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex:1;min-width:200px;">
+        <input type="range" min="1" max="30" value="${c.rate}" style="flex:1;height:6px;border:none;background:transparent;padding:0;"
+          oninput="COLLECTORS[${i}].rate=parseInt(this.value);document.getElementById('rd${i}').textContent=this.value+'%';renderBIRtax();renderPL2();"/>
+        <span id="rd${i}" style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);min-width:40px;text-align:right;">${c.rate}%</span>
+      </div>
+      <div style="font-size:0.82rem;color:var(--gray);">= ${peso(DB.loans.filter(l=>l.collector===c.name).reduce((s,l)=>s+computeInterest2(l),0)*(c.rate/100))} commission</div>
+    </div>`).join('');
+
+  populateCollectorDropdowns();
+}
+
+function openAddCollector(){
+  ['col-name','col-role','col-phone'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('col-role').value='Loan Collector';
+  document.getElementById('col-rate').value=10;
+  document.getElementById('col-rate-disp').textContent='10%';
+  document.getElementById('col-start').value=new Date().toISOString().split('T')[0];
+  document.getElementById('modal-collector').classList.add('open');
+}
+function saveCollector(){
+  const name=document.getElementById('col-name').value.trim();
+  if(!name){alert('Pakienter ang pangalan.');return;}
+  COLLECTORS.push({name,role:document.getElementById('col-role').value,
+    phone:document.getElementById('col-phone').value,
+    rate:parseInt(document.getElementById('col-rate').value),
+    start:document.getElementById('col-start').value});
+  closeModal('modal-collector');renderCollectors();
+}
+function removeCollector(i){
+  if(confirm('Alisin ang collector na ito?')){COLLECTORS.splice(i,1);renderCollectors();}
+}
+
+// ===== BIR TAX =====
+function renderBIRtax(){
+  if(!document.getElementById('bir-dst-total'))return;
+  const totalDST=DB.loans.reduce((s,l)=>s+(computeDST2(l.principal)),0);
+  const totalInterest=DB.loans.reduce((s,l)=>s+computeInterest2(l),0);
+  const totalCommissions=DB.loans.reduce((s,l)=>s+computeCommission2(l),0);
+  const totalOpex=DB.expenses.reduce((s,e)=>s+e.amount,0);
+  const netIncome=Math.max(0,totalInterest-totalCommissions-totalOpex-totalDST);
+  const pctTax=totalInterest*0.03;
+  const incomeTax=netIncome*0.20;
+  const grandTotal=totalDST+pctTax+incomeTax;
+
+  document.getElementById('bir-dst-total').textContent=peso(totalDST);
+  document.getElementById('bir-pct-total').textContent=peso(pctTax);
+  document.getElementById('bir-inc-total').textContent=peso(incomeTax);
+  document.getElementById('bir-grand-total').textContent=peso(grandTotal);
+
+  if(document.getElementById('tbody-dst-bir')){
+    document.getElementById('tbody-dst-bir').innerHTML=DB.loans.map(l=>`
+      <tr>
+        <td style="font-size:0.82rem;">${l.date}</td>
+        <td style="font-family:monospace;font-size:0.82rem;">${l.ref}</td>
+        <td>${l.name}</td>
+        <td>${peso(l.principal)}</td>
+        <td style="font-weight:500;color:var(--navy);">${peso(computeDST2(l.principal))}</td>
+        <td><span class="badge badge-approved">Narecord</span></td>
+      </tr>`).join('');
+    document.getElementById('dst-bir-grand').textContent=peso(totalDST);
+  }
+
+  // Quarterly PCT
+  const q=[0,0,0,0];
+  DB.loans.forEach(l=>{
+    const m=new Date(l.date).getMonth();
+    const qi=m<3?0:m<6?1:m<9?2:3;
+    q[qi]+=computeInterest2(l)*0.03;
+  });
+  ['q1','q2','q3','q4'].forEach((id,i)=>{
+    const el=document.getElementById('pct-'+id);
+    if(el)el.textContent=peso(q[i]);
+  });
+
+  // Income tax breakdown
+  if(document.getElementById('inc-gross')){
+    document.getElementById('inc-gross').textContent=peso(totalInterest);
+    document.getElementById('inc-deduct').textContent=peso(totalCommissions+totalOpex+totalDST);
+    document.getElementById('inc-net').textContent=peso(netIncome);
+    document.getElementById('inc-tax').textContent=peso(incomeTax);
+  }
+
+  renderTaxCalendar();
+}
+
+function renderTaxCalendar(){
+  const el=document.getElementById('tax-calendar');
+  if(!el)return;
+  const months=['Enero','Pebrero','Marso','Abril','Mayo','Hunyo','Hulyo','Agosto','Setyembre','Oktubre','Nobyembre','Disyembre'];
+  const cur=new Date().getMonth();
+  const deadlines={
+    0:['DST: Ene 5 (Dec loans)','ITR 1702Q: Feb 15 (Q4)'],
+    1:['DST: Feb 5 (Jan loans)'],
+    2:['DST: Mar 5 (Feb loans)'],
+    3:['DST: Apr 5 (Mar loans)','PCT 2551Q: Apr 25 (Q1)','ITR 1702Q: May 15 (Q1)','Annual ITR: Apr 15'],
+    4:['DST: May 5 (Apr loans)'],
+    5:['DST: Jun 5 (May loans)'],
+    6:['DST: Jul 5 (Jun loans)','PCT 2551Q: Jul 25 (Q2)','ITR 1702Q: Aug 15 (Q2)'],
+    7:['DST: Aug 5 (Jul loans)'],
+    8:['DST: Sep 5 (Aug loans)'],
+    9:['DST: Oct 5 (Sep loans)','PCT 2551Q: Oct 25 (Q3)','ITR 1702Q: Nov 15 (Q3)'],
+    10:['DST: Nov 5 (Oct loans)'],
+    11:['DST: Dec 5 (Nov loans)'],
+  };
+  el.innerHTML=months.map((m,i)=>`
+    <div style="background:var(--white);border-radius:8px;padding:1rem;border:1px solid rgba(10,22,40,0.08);${deadlines[i]?.length>1?'border-left:3px solid var(--red);':''}${i===cur?'background:rgba(201,168,76,0.08);border:1.5px solid var(--gold);':''}">
+      <div style="font-weight:500;font-size:0.85rem;margin-bottom:0.5rem;">${m} 2026${i===cur?' 📍':''}</div>
+      ${(deadlines[i]||['DST: '+months[(i+1)%12]+' 5']).map(d=>`<div style="font-size:0.75rem;color:var(--red);margin-bottom:0.2rem;display:flex;gap:0.4rem;align-items:flex-start;"><span>•</span><span>${d}</span></div>`).join('')}
+    </div>`).join('');
+}
+
+// Override showAdminTab to include new tabs
+const _origShowAdminTab = showAdminTab;
+function showAdminTab(id){
+  const allTabs=['loans','ledger','dst','expenses','pl','collectors','bir'];
+  allTabs.forEach(t=>{
+    const el=document.getElementById('atab-'+t);
+    if(el)el.style.display=t===id?'block':'none';
+  });
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(id==='bir')renderBIRtax();
+  if(id==='collectors')renderCollectors();
+  if(id==='ledger')renderLedger2();
+  if(id==='expenses')renderExpenses2();
+  if(id==='pl')renderPL2();
+}
+
+function renderLedger2(){
+  const el=document.getElementById('tbody-ledger');
+  if(!el)return;
+  const rows=DB.loans.map(l=>({
+    date:l.date,ref:l.ref,name:l.name,collector:l.collector||'—',
+    principal:l.principal,interest:computeInterest2(l),
+    dst:computeDST2(l.principal),commission:computeCommission2(l),
+    total:l.principal+computeInterest2(l)+computeDST2(l.principal)
+  }));
+  el.innerHTML=rows.map(r=>`
+    <tr>
+      <td style="font-size:0.82rem;">${r.date}</td>
+      <td style="font-family:monospace;font-size:0.82rem;">${r.ref}</td>
+      <td>${r.name}</td>
+      <td style="font-size:0.82rem;">${r.collector}</td>
+      <td style="color:var(--green);font-weight:500;">${peso(r.principal)}</td>
+      <td style="color:var(--green);">${peso(r.interest)}</td>
+      <td style="color:var(--gray);">${peso(r.dst)}</td>
+      <td style="color:var(--red);">${peso(r.commission)}</td>
+      <td style="font-weight:500;">${peso(r.total)}</td>
+    </tr>`).join('');
+  ['led-principal','led-interest','led-dst','led-total'].forEach((id,i)=>{
+    const keys=['principal','interest','dst','total'];
+    const el=document.getElementById(id);
+    if(el)el.textContent=peso(rows.reduce((s,r)=>s+r[keys[i]],0));
+  });
+}
+
+function renderExpenses2(){
+  renderExpenses();
+}
+
+function renderPL2(){
+  const totalInterest=DB.loans.reduce((s,l)=>s+computeInterest2(l),0);
+  const totalDST=DB.loans.reduce((s,l)=>s+computeDST2(l.principal),0);
+  const totalCommissions=DB.loans.reduce((s,l)=>s+computeCommission2(l),0);
+  const totalOpex=DB.expenses.reduce((s,e)=>s+e.amount,0);
+  const totalExp=totalCommissions+totalOpex+totalDST;
+  const netInc=totalInterest+totalDST-totalExp;
+  const capIn=DB.capital.filter(c=>c.type==='in').reduce((s,c)=>s+c.amount,0);
+  const capOut=DB.capital.filter(c=>c.type==='out').reduce((s,c)=>s+c.amount,0);
+  const set=(id,v,col)=>{const e=document.getElementById(id);if(e){e.textContent=peso(v);if(col)e.style.color=col;}};
+  set('pl-interest',totalInterest,'var(--green)');
+  set('pl-dst-col',totalDST,'var(--green)');
+  set('pl-total-inc',totalInterest+totalDST,'var(--green)');
+  // Check if P&L has commission row
+  const commEl=document.getElementById('pl-commissions');
+  if(commEl)commEl.textContent=peso(totalCommissions);
+  set('pl-opex',totalOpex,'var(--red)');
+  set('pl-dst-remit',totalDST,'var(--red)');
+  set('pl-total-exp',totalExp,'var(--red)');
+  const netEl=document.getElementById('pl-net');
+  if(netEl){netEl.textContent=peso(netInc);netEl.style.color=netInc>=0?'var(--gold)':'var(--red)';}
+  set('pl-cap-in',capIn,'var(--green)');
+  set('pl-cap-out',capOut,'var(--red)');
+  set('pl-cap-end',capIn-capOut+netInc);
+}
+
+// Init collectors on load
+document.addEventListener('DOMContentLoaded',()=>{
+  populateCollectorDropdowns();
+  setTimeout(renderBIRtax,100);
+});
+
+</script>
+</body>
+</html>
